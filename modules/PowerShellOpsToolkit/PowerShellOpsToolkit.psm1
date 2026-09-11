@@ -9,11 +9,42 @@ if (Test-Path $libRoot) {
 }
 
 $toolsRoot = Join-Path $repoRoot 'tools'
+$publicFunctions = [System.Collections.Generic.List[string]]::new()
+
 if (Test-Path $toolsRoot) {
-    Get-ChildItem -Path $toolsRoot -Recurse -Filter '*.ps1' -File |
-        Where-Object { $_.FullName -match '[\\/]scripts[\\/]' } |
-        Sort-Object FullName |
-        ForEach-Object { . $_.FullName }
+    Get-ChildItem -Path $toolsRoot -Directory | Sort-Object Name | ForEach-Object {
+        $toolName = $_.Name
+        $scriptPath = Join-Path $_.FullName "scripts\$toolName.ps1"
+
+        if (-not (Test-Path -LiteralPath $scriptPath -PathType Leaf)) {
+            return
+        }
+
+        if ($toolName -eq 'Start-LocalSite') {
+            $startLocalSiteScript = $scriptPath
+            function Start-LocalSite {
+                [CmdletBinding()]
+                param(
+                    [Parameter(Mandatory = $true, Position = 0)]
+                    [string]$Path,
+                    [Parameter(Position = 1)]
+                    [ValidateRange(0, 65535)]
+                    [int]$Port = 0
+                )
+
+                & $script:startLocalSiteScript -Path $Path -Port $Port
+            }
+            $publicFunctions.Add('Start-LocalSite')
+            return
+        }
+
+        . $scriptPath
+        if (Get-Command $toolName -CommandType Function -ErrorAction SilentlyContinue) {
+            $publicFunctions.Add($toolName)
+        }
+    }
 }
 
-# Individual tools should export their public functions explicitly once migrated.
+if ($publicFunctions.Count -gt 0) {
+    Export-ModuleMember -Function ($publicFunctions | Sort-Object -Unique)
+}
