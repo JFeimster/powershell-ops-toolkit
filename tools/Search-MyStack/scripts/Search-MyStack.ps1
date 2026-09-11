@@ -3,8 +3,42 @@ function Search-MyStack {
     param(
         [Parameter(Mandatory, Position=0)]
         [string]$Query,
-        [string[]]$Source
+        [string[]]$Source = @('LocalAssets','GitHub'),
+        [int]$MaxResults = 100
     )
 
-    throw 'Search-MyStack scaffold created; implementation pending.'
+    $results = [System.Collections.Generic.List[object]]::new()
+
+    if ('LocalAssets' -in $Source -and (Get-Command Find-ProjectAsset -ErrorAction SilentlyContinue)) {
+        foreach ($r in @(Find-ProjectAsset -Query $Query -MaxResults $MaxResults -ErrorAction SilentlyContinue)) {
+            $results.Add([pscustomobject]@{
+                Source = 'LocalAssets'
+                Name = Split-Path $r.File -Leaf
+                Path = $r.File
+                Url = $null
+                Detail = $r.Match
+                Score = 100
+            })
+        }
+    }
+
+    if ('GitHub' -in $Source -and (Get-Command gh -ErrorAction SilentlyContinue)) {
+        try {
+            $json = & gh search repos $Query --limit $MaxResults --json fullName,url,description,updatedAt 2>$null
+            if ($LASTEXITCODE -eq 0 -and $json) {
+                foreach ($repo in @($json | ConvertFrom-Json)) {
+                    $results.Add([pscustomobject]@{
+                        Source = 'GitHub'
+                        Name = $repo.fullName
+                        Path = $null
+                        Url = $repo.url
+                        Detail = $repo.description
+                        Score = 80
+                    })
+                }
+            }
+        } catch {}
+    }
+
+    $results | Sort-Object Score -Descending, Name | Select-Object -First $MaxResults
 }
