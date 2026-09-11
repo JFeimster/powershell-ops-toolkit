@@ -6,7 +6,7 @@
     "description": "Reusable PowerShell helpers and operator tooling for finding, opening, validating, and managing local projects, repos, deployments, and content workflows."
   },
   "canonicalLocalSkillsRoot": "C:\\Users\\jason\\OneDrive\\Desktop\\JSON\\skills",
-  "toolCount": 27,
+  "toolCount": 28,
   "tools": [
     {
       "id": "start-local-site",
@@ -29,6 +29,16 @@
         "GitHub"
       ],
       "description": "Find and rank local folders associated with a GitHub repository using Git remotes, folder names, configured project roots, and confidence scoring."
+    },
+    {
+      "id": "new-ops-tool",
+      "name": "New-OpsTool",
+      "status": "existing",
+      "priority": 0,
+      "platforms": [
+        "PowerShell"
+      ],
+      "description": "Scaffold new PowerShell Ops Toolkit tools using the lean default structure or optional extended capability folders for schemas, prompts, templates, agents, fixtures, docs, and examples."
     },
     {
       "id": "open-project",
