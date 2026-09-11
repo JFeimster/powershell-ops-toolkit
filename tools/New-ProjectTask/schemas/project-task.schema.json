@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Project Task",
+  "type": "object",
+  "required": ["repository", "title", "body", "mode"],
+  "properties": {
+    "repository": { "type": "string" },
+    "title": { "type": "string", "minLength": 1 },
+    "body": { "type": "string" },
+    "labels": { "type": "array", "items": { "type": "string" } },
+    "assignees": { "type": "array", "items": { "type": "string" } },
+    "mode": { "enum": ["preview", "create"] }
+  },
+  "additionalProperties": false
+}
