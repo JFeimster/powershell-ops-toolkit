@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Work Queue Item",
+  "type": "object",
+  "required": ["Type", "Number", "Title", "Repository", "Url"],
+  "properties": {
+    "Type": { "enum": ["Issue", "PullRequest"] },
+    "Number": { "type": "integer" },
+    "Title": { "type": "string" },
+    "Repository": { "type": "string" },
+    "Url": { "type": "string" },
+    "Labels": { "type": "array", "items": { "type": "string" } },
+    "UpdatedAt": { "type": ["string", "null"] },
+    "Priority": { "type": ["string", "null"] }
+  },
+  "additionalProperties": true
+}
