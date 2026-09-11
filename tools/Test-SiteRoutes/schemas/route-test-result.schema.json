@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Route Test Result",
+  "type": "object",
+  "required": ["Check", "Status", "Message"],
+  "properties": {
+    "Check": { "type": "string" },
+    "Status": { "enum": ["PASS", "WARN", "FAIL"] },
+    "Route": { "type": ["string", "null"] },
+    "File": { "type": ["string", "null"] },
+    "Message": { "type": "string" }
+  },
+  "additionalProperties": true
+}
