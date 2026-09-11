@@ -1,0 +1,456 @@
+[CmdletBinding()]
+param(
+    [Parameter(Mandatory = $true, Position = 0)]
+    [string]$Path,
+
+    [Parameter(Position = 1)]
+    [ValidateRange(0, 65535)]
+    [int]$Port = 0
+)
+
+$ErrorActionPreference = "Stop"
+
+function Resolve-SitePath {
+    param([string]$InputPath)
+
+    try {
+        $resolved = (Resolve-Path -LiteralPath $InputPath).Path
+    }
+    catch {
+        throw "Path not found: $InputPath"
+    }
+
+    if (Test-Path -LiteralPath $resolved -PathType Leaf) {
+        return [System.IO.Path]::GetDirectoryName($resolved)
+    }
+
+    return $resolved
+}
+
+function Get-PackageManager {
+    param(
+        [string]$ProjectPath,
+        [object]$PackageJson
+    )
+
+    if (Test-Path -LiteralPath (Join-Path $ProjectPath "pnpm-lock.yaml")) {
+        return "pnpm"
+    }
+
+    if (Test-Path -LiteralPath (Join-Path $ProjectPath "yarn.lock")) {
+        return "yarn"
+    }
+
+    if (
+        (Test-Path -LiteralPath (Join-Path $ProjectPath "bun.lock")) -or
+        (Test-Path -LiteralPath (Join-Path $ProjectPath "bun.lockb"))
+    ) {
+        return "bun"
+    }
+
+    if (Test-Path -LiteralPath (Join-Path $ProjectPath "package-lock.json")) {
+        return "npm"
+    }
+
+    if ($null -ne $PackageJson -and $PackageJson.packageManager) {
+        $declared = ([string]$PackageJson.packageManager -split "@")[0].ToLowerInvariant()
+
+        if ($declared -in @("npm", "pnpm", "yarn", "bun")) {
+            return $declared
+        }
+    }
+
+    return "npm"
+}
+
+function Get-ProjectType {
+    param(
+        [string]$ProjectPath,
+        [object]$PackageJson
+    )
+
+    if ($null -ne $PackageJson) {
+        $dependencyNames = @()
+
+        if ($PackageJson.dependencies) {
+            $dependencyNames += $PackageJson.dependencies.PSObject.Properties.Name
+        }
+
+        if ($PackageJson.devDependencies) {
+            $dependencyNames += $PackageJson.devDependencies.PSObject.Properties.Name
+        }
+
+        if ($dependencyNames -contains "next") {
+            return "Next.js"
+        }
+
+        if ($dependencyNames -contains "vite") {
+            return "Vite"
+        }
+
+        if (
+            ($dependencyNames -contains "react") -or
+            ($dependencyNames -contains "react-dom")
+        ) {
+            return "React"
+        }
+
+        return "Node"
+    }
+
+    if (Test-Path -LiteralPath (Join-Path $ProjectPath "index.html")) {
+        return "Static HTML"
+    }
+
+    return "Unknown"
+}
+
+function Test-LocalPortAvailable {
+    param([int]$Port)
+
+    $listener = $null
+
+    try {
+        $listener = [System.Net.Sockets.TcpListener]::new(
+            [System.Net.IPAddress]::Parse("127.0.0.1"),
+            $Port
+        )
+
+        $listener.Start()
+        return $true
+    }
+    catch {
+        return $false
+    }
+    finally {
+        if ($null -ne $listener) {
+            try {
+                $listener.Stop()
+            }
+            catch {}
+        }
+    }
+}
+
+function Get-AvailablePort {
+    param(
+        [int]$PreferredPort,
+        [int]$MaximumAttempts = 50
+    )
+
+    $candidate = $PreferredPort
+
+    for ($i = 0; $i -lt $MaximumAttempts; $i++) {
+        if (Test-LocalPortAvailable -Port $candidate) {
+            return $candidate
+        }
+
+        $candidate++
+    }
+
+    throw "Could not find an available port starting at $PreferredPort."
+}
+
+function Test-DependenciesInstalled {
+    param([string]$ProjectPath)
+
+    return (
+        (Test-Path -LiteralPath (Join-Path $ProjectPath "node_modules")) -or
+        (Test-Path -LiteralPath (Join-Path $ProjectPath ".pnp.cjs")) -or
+        (Test-Path -LiteralPath (Join-Path $ProjectPath ".pnp.js"))
+    )
+}
+
+function Install-ProjectDependencies {
+    param(
+        [string]$ProjectPath,
+        [string]$PackageManager
+    )
+
+    Write-Host ""
+    Write-Host "Dependencies: missing -> installing" -ForegroundColor Yellow
+
+    Push-Location -LiteralPath $ProjectPath
+
+    try {
+        switch ($PackageManager) {
+            "npm" {
+                if (Test-Path -LiteralPath (Join-Path $ProjectPath "package-lock.json")) {
+                    Write-Host "Install: npm ci" -ForegroundColor Cyan
+                    & npm ci
+
+                    if ($LASTEXITCODE -ne 0) {
+                        throw "npm ci failed with exit code $LASTEXITCODE."
+                    }
+                }
+                else {
+                    Write-Host "Install: npm install" -ForegroundColor Cyan
+                    & npm install
+
+                    if ($LASTEXITCODE -ne 0) {
+                        throw "npm install failed with exit code $LASTEXITCODE."
+                    }
+                }
+            }
+
+            "pnpm" {
+                Write-Host "Install: pnpm install" -ForegroundColor Cyan
+                & pnpm install
+
+                if ($LASTEXITCODE -ne 0) {
+                    throw "pnpm install failed with exit code $LASTEXITCODE."
+                }
+            }
+
+            "yarn" {
+                Write-Host "Install: yarn install" -ForegroundColor Cyan
+                & yarn install
+
+                if ($LASTEXITCODE -ne 0) {
+                    throw "yarn install failed with exit code $LASTEXITCODE."
+                }
+            }
+
+            "bun" {
+                Write-Host "Install: bun install" -ForegroundColor Cyan
+                & bun install
+
+                if ($LASTEXITCODE -ne 0) {
+                    throw "bun install failed with exit code $LASTEXITCODE."
+                }
+            }
+
+            default {
+                throw "Unsupported package manager: $PackageManager"
+            }
+        }
+    }
+    finally {
+        Pop-Location
+    }
+
+    Write-Host "Dependencies: installed" -ForegroundColor Green
+}
+
+function Get-RunScript {
+    param([object]$PackageJson)
+
+    if ($null -eq $PackageJson -or $null -eq $PackageJson.scripts) {
+        return $null
+    }
+
+    foreach ($name in @("dev", "start", "preview")) {
+        if ($PackageJson.scripts.PSObject.Properties.Name -contains $name) {
+            return $name
+        }
+    }
+
+    return $null
+}
+
+function Start-BrowserDelayed {
+    param([string]$Url)
+
+    $escapedUrl = $Url.Replace("'", "''")
+
+    Start-Process powershell `
+        -WindowStyle Hidden `
+        -ArgumentList @(
+            "-NoProfile",
+            "-Command",
+            "Start-Sleep -Seconds 2; Start-Process '$escapedUrl'"
+        ) | Out-Null
+}
+
+$sitePath = Resolve-SitePath -InputPath $Path
+$projectName = Split-Path -Leaf $sitePath
+
+$packageJsonPath = Join-Path $sitePath "package.json"
+$packageJson = $null
+
+if (Test-Path -LiteralPath $packageJsonPath) {
+    try {
+        $packageJson = Get-Content -LiteralPath $packageJsonPath -Raw | ConvertFrom-Json
+    }
+    catch {
+        throw "Could not parse package.json at: $packageJsonPath"
+    }
+}
+
+$projectType = Get-ProjectType `
+    -ProjectPath $sitePath `
+    -PackageJson $packageJson
+
+Write-Host ""
+Write-Host "Project: $projectName" -ForegroundColor Cyan
+Write-Host "Type: $projectType"
+
+if ($projectType -eq "Static HTML") {
+
+    if ($Port -eq 0) {
+        $Port = Get-Random -Minimum 8100 -Maximum 8999
+    }
+
+    $Port = Get-AvailablePort -PreferredPort $Port
+    $url = "http://localhost:$Port"
+
+    if (Get-Command python -ErrorAction SilentlyContinue) {
+        $pythonCommand = "python"
+    }
+    elseif (Get-Command py -ErrorAction SilentlyContinue) {
+        $pythonCommand = "py"
+    }
+    else {
+        throw "Static HTML detected, but Python is not available in PATH."
+    }
+
+    Write-Host "Serving: $sitePath"
+    Write-Host "URL: $url" -ForegroundColor Green
+    Write-Host "Stop: Ctrl+C"
+    Write-Host ""
+
+    Start-BrowserDelayed -Url $url
+
+    Push-Location -LiteralPath $sitePath
+
+    try {
+        if ($pythonCommand -eq "py") {
+            & py -m http.server $Port --bind 127.0.0.1
+        }
+        else {
+            & python -m http.server $Port --bind 127.0.0.1
+        }
+    }
+    finally {
+        Pop-Location
+    }
+
+    exit
+}
+
+if ($projectType -in @("Next.js", "Vite", "React", "Node")) {
+
+    $packageManager = Get-PackageManager `
+        -ProjectPath $sitePath `
+        -PackageJson $packageJson
+
+    Write-Host "Package manager: $packageManager"
+
+    if (-not (Get-Command $packageManager -ErrorAction SilentlyContinue)) {
+        throw "Package manager '$packageManager' is not available in PATH."
+    }
+
+    if (-not (Test-DependenciesInstalled -ProjectPath $sitePath)) {
+        Install-ProjectDependencies `
+            -ProjectPath $sitePath `
+            -PackageManager $packageManager
+    }
+    else {
+        Write-Host "Dependencies: present" -ForegroundColor Green
+    }
+
+    $runScript = Get-RunScript -PackageJson $packageJson
+
+    if (-not $runScript) {
+        throw "No supported package.json script found. Expected dev, start, or preview."
+    }
+
+    if ($Port -eq 0) {
+        switch ($projectType) {
+            "Next.js" { $Port = 3000 }
+            "Vite"    { $Port = 5173 }
+            default   { $Port = 3000 }
+        }
+    }
+
+    $originalPort = $Port
+    $Port = Get-AvailablePort -PreferredPort $Port
+
+    if ($Port -ne $originalPort) {
+        Write-Host "Port $originalPort is busy -> using $Port" -ForegroundColor Yellow
+    }
+
+    $url = "http://localhost:$Port"
+
+    Write-Host "Script: $runScript"
+    Write-Host "Serving: $sitePath"
+    Write-Host "URL: $url" -ForegroundColor Green
+    Write-Host "Stop: Ctrl+C"
+    Write-Host ""
+
+    Start-BrowserDelayed -Url $url
+
+    Push-Location -LiteralPath $sitePath
+
+    try {
+        if ($runScript -eq "dev") {
+
+            if ($projectType -eq "Next.js") {
+                $frameworkArgs = @(
+                    "--hostname",
+                    "127.0.0.1",
+                    "--port",
+                    "$Port"
+                )
+            }
+            elseif ($projectType -eq "Vite") {
+                $frameworkArgs = @(
+                    "--host",
+                    "127.0.0.1",
+                    "--port",
+                    "$Port"
+                )
+            }
+            else {
+                $env:PORT = "$Port"
+                $frameworkArgs = @()
+            }
+
+            if ($projectType -eq "Next.js") {
+                $nextCli = Join-Path $sitePath "node_modules\next\dist\bin\next"
+
+                if (-not (Test-Path -LiteralPath $nextCli)) {
+                    throw "Next.js CLI not found: $nextCli"
+                }
+
+                & node $nextCli dev --hostname 127.0.0.1 --port $Port
+            }
+            elseif ($projectType -eq "Vite") {
+                $viteCli = Join-Path $sitePath "node_modules\vite\bin\vite.js"
+
+                if (-not (Test-Path -LiteralPath $viteCli)) {
+                    throw "Vite CLI not found: $viteCli"
+                }
+
+                & node $viteCli --host 127.0.0.1 --port $Port
+            }
+            else {
+                switch ($packageManager) {
+                    "npm"  { & npm run dev }
+                    "pnpm" { & pnpm run dev }
+                    "yarn" { & yarn dev }
+                    "bun"  { & bun run dev }
+                }
+            }
+        }
+        else {
+            $env:PORT = "$Port"
+
+            switch ($packageManager) {
+                "npm"  { & npm run $runScript }
+                "pnpm" { & pnpm run $runScript }
+                "yarn" { & yarn $runScript }
+                "bun"  { & bun run $runScript }
+            }
+        }
+    }
+    finally {
+        Pop-Location
+    }
+
+    exit
+}
+
+throw "Could not determine how to preview project: $sitePath"
+
+
