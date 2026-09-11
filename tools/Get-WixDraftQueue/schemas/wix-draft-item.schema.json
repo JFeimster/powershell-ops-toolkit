@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Wix Draft Queue Item",
+  "type": "object",
+  "required": ["Title", "Status", "Stale", "MissingMetaDescription", "MissingFeaturedImage"],
+  "properties": {
+    "Title": { "type": "string" },
+    "Status": { "type": "string" },
+    "UpdatedAt": { "type": ["string", "null"] },
+    "Stale": { "type": "boolean" },
+    "MissingMetaDescription": { "type": "boolean" },
+    "MissingFeaturedImage": { "type": "boolean" },
+    "Slug": { "type": ["string", "null"] },
+    "Id": { "type": ["string", "null"] }
+  },
+  "additionalProperties": true
+}
