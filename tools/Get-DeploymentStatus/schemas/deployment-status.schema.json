@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Deployment Status",
+  "type": "object",
+  "required": ["Repository", "Path", "Branch", "LocalHead", "InSync"],
+  "properties": {
+    "Repository": { "type": ["string", "null"] },
+    "Path": { "type": "string" },
+    "Branch": { "type": ["string", "null"] },
+    "LocalHead": { "type": ["string", "null"] },
+    "RemoteHead": { "type": ["string", "null"] },
+    "VercelProject": { "type": ["string", "null"] },
+    "ProductionUrl": { "type": ["string", "null"] },
+    "LatestDeployment": { "type": ["object", "null"] },
+    "InSync": { "type": ["boolean", "null"] }
+  },
+  "additionalProperties": true
+}
