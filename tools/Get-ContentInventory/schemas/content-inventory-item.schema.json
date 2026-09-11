@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Content Inventory Item",
+  "type": "object",
+  "required": ["Title", "Type", "Source"],
+  "properties": {
+    "Title": { "type": "string" },
+    "Type": { "type": "string" },
+    "Url": { "type": ["string", "null"] },
+    "Source": { "type": "string" },
+    "Status": { "type": ["string", "null"] },
+    "UpdatedAt": { "type": ["string", "null"] },
+    "Id": { "type": ["string", "null"] }
+  },
+  "additionalProperties": true
+}
