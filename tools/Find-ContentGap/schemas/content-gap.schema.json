@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Content Gap Analysis",
+  "type": "object",
+  "required": ["topic", "matches", "gaps", "recommendation"],
+  "properties": {
+    "topic": { "type": "string" },
+    "matches": { "type": "array" },
+    "gaps": { "type": "array" },
+    "internalLinkOpportunities": { "type": "array" },
+    "aeoOpportunities": { "type": "array" },
+    "recommendation": { "type": "string" }
+  },
+  "additionalProperties": true
+}
