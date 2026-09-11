@@ -22,11 +22,14 @@ function Get-WixDraftQueue {
     }
 
     $cutoff = (Get-Date).AddDays(-$StaleDays)
-    foreach ($item in $items) {
+    $results = foreach ($item in $items) {
         $status = [string]($item.status ?? $item.publishStatus ?? $item.state)
         $updatedRaw = $item.updatedDate ?? $item.updatedAt ?? $item.lastUpdated
         $updated = $null
-        if ($updatedRaw) { [datetime]::TryParse([string]$updatedRaw, [ref]$updated) | Out-Null }
+        if ($updatedRaw) {
+            $parsed = [datetime]::MinValue
+            if ([datetime]::TryParse([string]$updatedRaw, [ref]$parsed)) { $updated = $parsed }
+        }
         $title = [string]($item.title ?? $item.name)
         $meta = [string]($item.metaDescription ?? $item.seoDescription)
         $featured = $item.featuredImage ?? $item.image
@@ -42,5 +45,7 @@ function Get-WixDraftQueue {
             Slug = $item.slug
             Id = $item.id ?? $item._id
         }
-    } | Sort-Object @{Expression='Stale';Descending=$true}, UpdatedAt
+    }
+
+    $results | Sort-Object @{Expression='Stale';Descending=$true}, UpdatedAt
 }
