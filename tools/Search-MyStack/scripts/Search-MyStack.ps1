@@ -40,5 +40,7 @@ function Search-MyStack {
         } catch {}
     }
 
-    $results | Sort-Object Score -Descending, Name | Select-Object -First $MaxResults
+    $results |
+        Sort-Object @{Expression='Score';Descending=$true}, @{Expression='Name';Descending=$false} |
+        Select-Object -First $MaxResults
 }
