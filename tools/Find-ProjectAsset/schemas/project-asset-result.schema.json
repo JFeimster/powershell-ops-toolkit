@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Project Asset Search Result",
+  "type": "object",
+  "required": ["File", "Match"],
+  "properties": {
+    "File": { "type": "string" },
+    "Match": { "type": "string" },
+    "Line": { "type": ["integer", "null"] },
+    "Source": { "type": ["string", "null"] }
+  },
+  "additionalProperties": true
+}
