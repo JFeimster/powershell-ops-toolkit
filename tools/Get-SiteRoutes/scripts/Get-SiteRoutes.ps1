@@ -20,17 +20,17 @@ function Get-SiteRoutes {
         @{ Dir = Join-Path $path 'src\pages'; Kind='PagesRouter' }
     )
 
-    foreach ($root in $roots) {
+    $results = foreach ($root in $roots) {
         if (-not (Test-Path $root.Dir)) { continue }
         $files = Get-ChildItem $root.Dir -Recurse -File -ErrorAction SilentlyContinue |
             Where-Object { $_.Name -match '^(page|index)\.(js|jsx|ts|tsx|mdx)$' }
         foreach ($file in $files) {
-            $relDir = $file.Directory.FullName.Substring($root.Dir.Length).TrimStart('\','/')
+            $relDir = $file.Directory.FullName.Substring($root.Dir.Length).TrimStart([char]'\',[char]'/')
             if ($root.Kind -eq 'AppRouter') {
                 $segments = @($relDir -split '[\\/]' | Where-Object { $_ -and $_ -notmatch '^\(.*\)$' })
                 $route = '/' + ($segments -join '/')
             } else {
-                $rel = $file.FullName.Substring($root.Dir.Length).TrimStart('\','/') -replace '\\','/'
+                $rel = $file.FullName.Substring($root.Dir.Length).TrimStart([char]'\',[char]'/') -replace '\\','/'
                 $route = '/' + ($rel -replace '/?index\.(js|jsx|ts|tsx|mdx)$','' -replace '\.(js|jsx|ts|tsx|mdx)$','')
             }
             if ($route -eq '') { $route = '/' }
@@ -41,5 +41,7 @@ function Get-SiteRoutes {
                 Dynamic = $route -match '\[[^\]]+\]'
             }
         }
-    } | Sort-Object Route -Unique
+    }
+
+    $results | Sort-Object Route -Unique
 }
