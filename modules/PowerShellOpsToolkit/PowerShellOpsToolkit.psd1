@@ -1,13 +1,13 @@
 @{
     RootModule = 'PowerShellOpsToolkit.psm1'
-    ModuleVersion = '0.1.0'
+    ModuleVersion = '0.1.1'
     GUID = 'c3c8f73d-1e6c-4c0a-8d95-61dd39fcf4d1'
     Author = 'Jason Feimster'
     CompanyName = 'Moonshine Capital'
     Copyright = '(c) 2026 Jason Feimster. All rights reserved.'
     Description = 'Reusable PowerShell operator tooling for local projects, repositories, deployments, and content workflows.'
     PowerShellVersion = '7.0'
-    FunctionsToExport = @()
+    FunctionsToExport = '*'
     CmdletsToExport = @()
     VariablesToExport = @()
     AliasesToExport = @()
