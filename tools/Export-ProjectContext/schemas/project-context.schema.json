@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Project Context",
+  "type": "object",
+  "required": ["generatedAt", "repository", "path", "status", "links", "importantFiles", "routes", "changedFiles"],
+  "properties": {
+    "generatedAt": { "type": "string" },
+    "repository": { "type": ["string", "null"] },
+    "path": { "type": "string" },
+    "status": { "type": ["object", "null"] },
+    "links": { "type": ["object", "null"] },
+    "importantFiles": { "type": "array", "items": { "type": "string" } },
+    "routes": { "type": "array" },
+    "changedFiles": { "type": "array" }
+  },
+  "additionalProperties": true
+}
