@@ -1,0 +1,333 @@
+{
+  "schemaVersion": "1.0",
+  "name": "PowerShell Ops Toolkit Registry",
+  "suggestedGitHubRepo": {
+    "name": "powershell-ops-toolkit",
+    "description": "Reusable PowerShell helpers and operator tooling for finding, opening, validating, and managing local projects, repos, deployments, and content workflows."
+  },
+  "canonicalLocalSkillsRoot": "C:\\Users\\jason\\OneDrive\\Desktop\\JSON\\skills",
+  "toolCount": 27,
+  "tools": [
+    {
+      "id": "start-local-site",
+      "name": "Start-LocalSite",
+      "status": "existing",
+      "priority": 0,
+      "platforms": [
+        "PowerShell"
+      ],
+      "description": "Start a local site preview from a supplied project path using the existing reusable local-site-preview skill."
+    },
+    {
+      "id": "find-local-repo",
+      "name": "Find-LocalRepo",
+      "status": "existing",
+      "priority": 0,
+      "platforms": [
+        "PowerShell",
+        "Git",
+        "GitHub"
+      ],
+      "description": "Find and rank local folders associated with a GitHub repository using Git remotes, folder names, configured project roots, and confidence scoring."
+    },
+    {
+      "id": "open-project",
+      "name": "Open-Project",
+      "status": "recommended",
+      "priority": 1,
+      "platforms": [
+        "PowerShell",
+        "VS Code"
+      ],
+      "description": "Resolve a project using Find-LocalRepo and open the best local match in VS Code, Explorer, GitHub, or Vercel."
+    },
+    {
+      "id": "get-project-status",
+      "name": "Get-ProjectStatus",
+      "status": "recommended",
+      "priority": 2,
+      "platforms": [
+        "PowerShell",
+        "Git"
+      ],
+      "description": "Show branch, dirty files, ahead/behind state, remote, last commit, package manager, framework, and deployment configuration."
+    },
+    {
+      "id": "start-project",
+      "name": "Start-Project",
+      "status": "recommended",
+      "priority": 3,
+      "platforms": [
+        "PowerShell",
+        "Node.js"
+      ],
+      "description": "Find a repo, detect package manager and available dev scripts, start the correct local development command, and optionally open the browser."
+    },
+    {
+      "id": "test-project",
+      "name": "Test-Project",
+      "status": "recommended",
+      "priority": 4,
+      "platforms": [
+        "PowerShell",
+        "Git",
+        "Node.js"
+      ],
+      "description": "Detect and run available lint, typecheck, test, and build scripts and return a compact PASS/FAIL summary."
+    },
+    {
+      "id": "get-project-links",
+      "name": "Get-ProjectLinks",
+      "status": "recommended",
+      "priority": 5,
+      "platforms": [
+        "PowerShell",
+        "GitHub",
+        "Vercel",
+        "Wix",
+        "Notion"
+      ],
+      "description": "Return known local, GitHub, Vercel, production, preview, Wix, and Notion links associated with a project."
+    },
+    {
+      "id": "open-project-stack",
+      "name": "Open-ProjectStack",
+      "status": "recommended",
+      "priority": 6,
+      "platforms": [
+        "PowerShell",
+        "VS Code",
+        "GitHub",
+        "Vercel",
+        "Notion"
+      ],
+      "description": "Open the local repo, GitHub repo, production site, Vercel dashboard, and mapped project resources in one command."
+    },
+    {
+      "id": "compare-repo-copies",
+      "name": "Compare-RepoCopies",
+      "status": "recommended",
+      "priority": 7,
+      "platforms": [
+        "PowerShell",
+        "Git"
+      ],
+      "description": "Find duplicate local copies of a repo and compare remote, branch, last commit, modified date, dirty state, and file counts."
+    },
+    {
+      "id": "get-repo-health",
+      "name": "Get-RepoHealth",
+      "status": "recommended",
+      "priority": 8,
+      "platforms": [
+        "PowerShell",
+        "Git",
+        "Node.js"
+      ],
+      "description": "Check Git metadata, lockfiles, stale build artifacts, generated files, scripts, environment examples, and workspace-root issues."
+    },
+    {
+      "id": "find-project-asset",
+      "name": "Find-ProjectAsset",
+      "status": "recommended",
+      "priority": 9,
+      "platforms": [
+        "PowerShell",
+        "ResourceGrid"
+      ],
+      "description": "Search registries for tools, GPTs, calculators, CTAs, content, repos, forms, lead magnets, or partner assets related to a keyword."
+    },
+    {
+      "id": "export-project-context",
+      "name": "Export-ProjectContext",
+      "status": "recommended",
+      "priority": 10,
+      "platforms": [
+        "PowerShell",
+        "ChatGPT"
+      ],
+      "description": "Generate a compact Markdown or JSON project brief with repo metadata, architecture, important files, scripts, routes, recent commits, URLs, and TODOs."
+    },
+    {
+      "id": "get-changed-files",
+      "name": "Get-ChangedFiles",
+      "status": "recommended",
+      "priority": 11,
+      "platforms": [
+        "PowerShell",
+        "Git"
+      ],
+      "description": "Show meaningful modified and untracked files while filtering build artifacts, caches, logs, and generated output."
+    },
+    {
+      "id": "get-work-queue",
+      "name": "Get-WorkQueue",
+      "status": "recommended",
+      "priority": 12,
+      "platforms": [
+        "PowerShell",
+        "GitHub"
+      ],
+      "description": "Retrieve open GitHub issues and pull requests for a repo and sort them into a practical current execution queue."
+    },
+    {
+      "id": "open-github-repo",
+      "name": "Open-GitHubRepo",
+      "status": "recommended",
+      "priority": 13,
+      "platforms": [
+        "PowerShell",
+        "GitHub"
+      ],
+      "description": "Accept a repo name, URL, or local directory and open the canonical GitHub repository."
+    },
+    {
+      "id": "open-vercel-project",
+      "name": "Open-VercelProject",
+      "status": "recommended",
+      "priority": 14,
+      "platforms": [
+        "PowerShell",
+        "Vercel"
+      ],
+      "description": "Resolve a local repo to a mapped Vercel project and open its dashboard or production URL."
+    },
+    {
+      "id": "new-project-task",
+      "name": "New-ProjectTask",
+      "status": "recommended",
+      "priority": 15,
+      "platforms": [
+        "PowerShell",
+        "GitHub"
+      ],
+      "description": "Prepare a clean GitHub issue or task from current repo context, defaulting to preview-only until explicitly authorized to create it."
+    },
+    {
+      "id": "get-site-routes",
+      "name": "Get-SiteRoutes",
+      "status": "recommended",
+      "priority": 16,
+      "platforms": [
+        "PowerShell",
+        "Next.js"
+      ],
+      "description": "Scan app, pages, content JSON, and dynamic routes to produce the actual route inventory for a site."
+    },
+    {
+      "id": "test-site-routes",
+      "name": "Test-SiteRoutes",
+      "status": "recommended",
+      "priority": 17,
+      "platforms": [
+        "PowerShell",
+        "Next.js"
+      ],
+      "description": "Check routes for missing content files, duplicate slugs, dead internal links, invalid JSON contracts, and missing metadata."
+    },
+    {
+      "id": "get-content-inventory",
+      "name": "Get-ContentInventory",
+      "status": "recommended",
+      "priority": 18,
+      "platforms": [
+        "PowerShell",
+        "Wix",
+        "ResourceGrid"
+      ],
+      "description": "Pull or reconcile blog posts, landing pages, videos, lead magnets, CTAs, tools, and affiliate resources into one inventory."
+    },
+    {
+      "id": "find-content-gap",
+      "name": "Find-ContentGap",
+      "status": "recommended",
+      "priority": 19,
+      "platforms": [
+        "ChatGPT",
+        "Wix",
+        "ResourceGrid"
+      ],
+      "description": "Compare a planned topic against existing content to flag duplication, cannibalization, missing internal links, and AEO opportunities."
+    },
+    {
+      "id": "new-content-brief",
+      "name": "New-ContentBrief",
+      "status": "recommended",
+      "priority": 20,
+      "platforms": [
+        "ChatGPT",
+        "Wix",
+        "Notion"
+      ],
+      "description": "Generate title, keyword cluster, slug, excerpt, meta description, outline, CTA, internal links, FAQ schema, and video angle."
+    },
+    {
+      "id": "get-wix-draft-queue",
+      "name": "Get-WixDraftQueue",
+      "status": "recommended",
+      "priority": 21,
+      "platforms": [
+        "Wix"
+      ],
+      "description": "Show unpublished drafts, stale drafts, incomplete SEO metadata, missing featured images, and content ready to publish."
+    },
+    {
+      "id": "get-deployment-status",
+      "name": "Get-DeploymentStatus",
+      "status": "recommended",
+      "priority": 22,
+      "platforms": [
+        "PowerShell",
+        "GitHub",
+        "Vercel"
+      ],
+      "description": "Show branch, latest GitHub commit, latest Vercel deployment, deployment status, production URL, and whether local HEAD matches deployed HEAD."
+    },
+    {
+      "id": "invoke-project-doctor",
+      "name": "Invoke-ProjectDoctor",
+      "status": "recommended",
+      "priority": 23,
+      "platforms": [
+        "PowerShell",
+        "Git",
+        "Node.js",
+        "Vercel"
+      ],
+      "description": "Run an umbrella diagnostic across repo health, duplicate copies, Git state, Node version, package manager, lockfiles, scripts, build status, and deployment mapping."
+    },
+    {
+      "id": "get-skill-inventory",
+      "name": "Get-SkillInventory",
+      "status": "recommended",
+      "priority": 24,
+      "platforms": [
+        "PowerShell"
+      ],
+      "description": "Scan the JSON skills directory, validate structure, show commands exposed by each skill, and flag missing docs or duplicate helper names."
+    },
+    {
+      "id": "search-my-stack",
+      "name": "Search-MyStack",
+      "status": "recommended",
+      "priority": 25,
+      "platforms": [
+        "PowerShell",
+        "GitHub",
+        "Vercel",
+        "Wix",
+        "Notion",
+        "ResourceGrid"
+      ],
+      "description": "Search across repos, Vercel apps, Wix assets, GPTs, tools, Notion databases, and registries from one query."
+    }
+  ],
+  "recommendedBuildOrder": [
+    "Open-Project",
+    "Get-ProjectStatus",
+    "Start-Project",
+    "Compare-RepoCopies",
+    "Export-ProjectContext",
+    "Get-DeploymentStatus"
+  ]
+}
