@@ -43,7 +43,7 @@ function Export-ProjectContext {
             "# Project Context: $($status.Repository)",
             '',
             "Generated: $($context.generatedAt)",
-            "Local path: `$path`",
+            ('Local path: `{0}`' -f $path),
             "Branch: $($status.Branch)",
             "Git remote: $($status.GitRemote)",
             "Framework: $($status.Framework)",
