@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Stack Search Result",
+  "type": "object",
+  "required": ["Source", "Name", "Score"],
+  "properties": {
+    "Source": { "type": "string" },
+    "Name": { "type": "string" },
+    "Path": { "type": ["string", "null"] },
+    "Url": { "type": ["string", "null"] },
+    "Detail": { "type": ["string", "null"] },
+    "Score": { "type": "number" }
+  },
+  "additionalProperties": true
+}
