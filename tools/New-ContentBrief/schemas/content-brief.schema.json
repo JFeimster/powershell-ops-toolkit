@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Content Brief",
+  "type": "object",
+  "required": ["Title", "PrimaryKeyword", "Slug", "MetaDescription", "Outline", "CTA"],
+  "properties": {
+    "Title": { "type": "string" },
+    "PrimaryKeyword": { "type": "string" },
+    "SecondaryKeywords": { "type": "array", "items": { "type": "string" } },
+    "SearchIntent": { "type": ["string", "null"] },
+    "Slug": { "type": "string" },
+    "MetaDescription": { "type": "string" },
+    "Excerpt": { "type": ["string", "null"] },
+    "Outline": { "type": "array" },
+    "InternalLinks": { "type": "array" },
+    "CTA": { "type": "string" },
+    "FAQ": { "type": "array" },
+    "VideoAngle": { "type": ["string", "null"] }
+  },
+  "additionalProperties": true
+}
