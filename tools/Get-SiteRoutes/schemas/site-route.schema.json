@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Site Route",
+  "type": "object",
+  "required": ["Route", "Router", "File", "Dynamic"],
+  "properties": {
+    "Route": { "type": "string" },
+    "Router": { "enum": ["AppRouter", "PagesRouter"] },
+    "File": { "type": "string" },
+    "Dynamic": { "type": "boolean" }
+  },
+  "additionalProperties": false
+}
