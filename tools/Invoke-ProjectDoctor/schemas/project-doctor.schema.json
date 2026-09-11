@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Project Doctor Report",
+  "type": "object",
+  "required": ["ProjectStatus", "RepoHealth", "ChangedFiles", "Deployment"],
+  "properties": {
+    "ProjectStatus": { "type": ["object", "null"] },
+    "RepoHealth": { "type": ["array", "object", "null"] },
+    "ChangedFiles": { "type": "array" },
+    "Deployment": { "type": ["object", "null"] },
+    "Summary": { "type": ["string", "null"] }
+  },
+  "additionalProperties": true
+}
